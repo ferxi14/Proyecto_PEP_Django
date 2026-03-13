@@ -40,10 +40,10 @@ STATUS_CHOICES = [
 ]
 
 RATING_CHOICES = [
-    (1, '★ Pésimo'),
-    (2, '★★ Malo'),
-    (3, '★★★ Regular'),
-    (4, '★★★★ Bueno'),
+    (1, '★ Malo'),
+    (2, '★★ Regular'),
+    (3, '★★★ Bien'),
+    (4, '★★★★ Muy bueno'),
     (5, '★★★★★ Obra maestra'),
 ]
 
@@ -107,3 +107,41 @@ class Game(models.Model):
             'switch': '🕹️', 'mobile': '📱', 'retro': '👾',
         }
         return icons.get(self.platform, '🎮')
+    
+class Comment(models.Model):
+    """Comentarios de los usuarios sobre un videojuego"""
+    # ForeignKey al juego comentado
+    game = models.ForeignKey(
+        Game, 
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Videojuego'
+    )
+
+    # ForeignKey al usuario que comenta
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Autor'
+    )
+
+    # Contenido del comentario 
+    body = models.TextField(
+        verbose_name='comentario',
+        max_length=1000,
+    )
+
+    # Fecha automática
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Fecha'
+    )
+
+    class Meta:
+        verbose_name = 'Comentario'
+        verbose_name_plural = 'Comentarios'
+        ordering = ['created_at']   # más antiguos primero
+    
+    def __str__(self):
+        return f'Comentario de {self.author.username} en "{self.game.title}"'

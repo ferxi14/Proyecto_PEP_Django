@@ -3,10 +3,10 @@ from django.views.generic.edit import FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login
 from django.contrib import messages
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from .models import Game
-from .forms import GameForm, CustomUserCreationForm
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect, get_object_or_404
+from .models import Game, Comment
+from .forms import GameForm, CustomUserCreationForm, CommentForm
 
 
 class GameListView(ListView):
@@ -66,6 +66,36 @@ class GameDetailView(DetailView):
     model = Game
     template_name = 'catalog/game_detail.html'
     context_object_name = 'game'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # pasa la lista de comentarios al template
+        context['comments'] = self.object.comments.select_related('author').all()
+        # pasa el formulario vacío al template
+        context['comment_form'] = CommentForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """Procesa el envío del formulario de comentarios."""
+        if not request.user.is_authenticated:
+            messages.error(request, 'Debes iniciar sesión para dejar un comentario.')
+            return redirect('login')
+
+        self.object = self.get_object()
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            comment = form.save(commit=False)  # no guarda aún
+            comment.game   = self.object       # asigna el juego
+            comment.author = request.user      # asigna el usuario
+            comment.save()                     # ahora sí guarda
+            messages.success(request, '¡Comentario publicado!')
+            return redirect('catalog:game_detail', pk=self.object.pk)
+
+        # si hay errores, vuelve a mostrar la página con el formulario con errores
+        context = self.get_context_data()
+        context['comment_form'] = form
+        return self.render_to_response(context)
 
 
 class GameCreateView(LoginRequiredMixin, CreateView):
@@ -146,3 +176,19 @@ class SignUpView(FormView):
         login(self.request, user)
         messages.success(self.request, f'¡Bienvenido/a, {user.username}! Tu cuenta ha sido creada. ¡Empieza a añadir tus juegos!')
         return super().form_valid(form)
+
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = 'catalog/comment_confirm_delete.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        comment = self.get_object()
+        if not request.user.is_staff and not request.user.is_superuser:
+            if comment.author != request.user:
+                messages.error(request, 'No puedes eliminar comentarios de otros usuarios.')
+                return redirect('catalog:game_detail', pk=comment.game.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        messages.success(self.request, 'Comentario eliminado.')
+        return reverse('catalog:game_detail', kwargs={'pk': self.object.game.pk})
