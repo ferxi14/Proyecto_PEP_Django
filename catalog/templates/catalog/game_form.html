@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Videojuego{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{{ action }} Videojuego</h1>
+        <p>Completa los datos del juego para añadirlo a tu catálogo.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="game-form" novalidate>
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="form-errors">
+                {% for error in form.non_field_errors %}
+                    <p class="error-text">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-grid">
+            <!-- Columna izquierda -->
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}" class="form-label required">{{ form.title.label }}</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}<span class="field-error">{{ form.title.errors|join:", " }}</span>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.developer.id_for_label }}" class="form-label required">{{ form.developer.label }}</label>
+                    {{ form.developer }}
+                    {% if form.developer.errors %}<span class="field-error">{{ form.developer.errors|join:", " }}</span>{% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.year.id_for_label }}" class="form-label required">{{ form.year.label }}</label>
+                        {{ form.year }}
+                        {% if form.year.errors %}<span class="field-error">{{ form.year.errors|join:", " }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.genre.id_for_label }}" class="form-label required">{{ form.genre.label }}</label>
+                        {{ form.genre }}
+                        {% if form.genre.errors %}<span class="field-error">{{ form.genre.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.platform.id_for_label }}" class="form-label required">{{ form.platform.label }}</label>
+                        {{ form.platform }}
+                        {% if form.platform.errors %}<span class="field-error">{{ form.platform.errors|join:", " }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.status.id_for_label }}" class="form-label required">{{ form.status.label }}</label>
+                        {{ form.status }}
+                        {% if form.status.errors %}<span class="field-error">{{ form.status.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.rating.id_for_label }}" class="form-label required">{{ form.rating.label }}</label>
+                        {{ form.rating }}
+                        {% if form.rating.errors %}<span class="field-error">{{ form.rating.errors|join:", " }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.hours_played.id_for_label }}" class="form-label">{{ form.hours_played.label }}</label>
+                        {{ form.hours_played }}
+                        {% if form.hours_played.errors %}<span class="field-error">{{ form.hours_played.errors|join:", " }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.cover.id_for_label }}" class="form-label">{{ form.cover.label }}</label>
+                    {{ form.cover }}
+                    {% if form.cover.errors %}<span class="field-error">{{ form.cover.errors|join:", " }}</span>{% endif %}
+                </div>
+
+                <div class="form-group form-group-check">
+                    {{ form.is_favorite }}
+                    <label for="{{ form.is_favorite.id_for_label }}" class="form-label-check">{{ form.is_favorite.label }}</label>
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="form-col">
+                <div class="form-group form-group-full">
+                    <label for="{{ form.review.id_for_label }}" class="form-label required">{{ form.review.label }}</label>
+                    {{ form.review }}
+                    {% if form.review.errors %}<span class="field-error">{{ form.review.errors|join:", " }}</span>{% endif %}
+                    <p class="field-help">{{ form.review.help_text }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if action == 'Añadir' %}🎮 Añadir a mi catálogo{% else %}💾 Guardar Cambios{% endif %}
+            </button>
+            <a href="{% url 'catalog:game_list' %}" class="btn btn-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

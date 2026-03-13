@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Videojuegos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-content">
+        <h1 class="page-title">🎮 Catálogo de Videojuegos</h1>
+        <p class="page-subtitle">Descubre y comparte reseñas con la comunidad gamer</p>
+    </div>
+    {% if user.is_authenticated %}
+        <a href="{% url 'catalog:game_create' %}" class="btn btn-primary">+ Añadir Juego</a>
+    {% endif %}
+</div>
+
+<!-- Filtros -->
+<div class="filters-bar">
+    <form method="get" action="{% url 'catalog:game_list' %}" class="filters-form">
+        <div class="search-group">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Buscar por título..." class="search-input">
+        </div>
+        <select name="genre" class="filter-select">
+            <option value="">Todos los géneros</option>
+            {% for value, label in genre_choices %}
+                <option value="{{ value }}" {% if selected_genre == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <select name="platform" class="filter-select">
+            <option value="">Todas las plataformas</option>
+            {% for value, label in platform_choices %}
+                <option value="{{ value }}" {% if selected_platform == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-secondary">Filtrar</button>
+        {% if search_query or selected_genre or selected_platform %}
+            <a href="{% url 'catalog:game_list' %}" class="btn btn-ghost">✕ Limpiar</a>
+        {% endif %}
+    </form>
+</div>
+
+{% if games %}
+    <div class="games-grid">
+        {% for game in games %}
+            <article class="game-card">
+                <a href="{% url 'catalog:game_detail' game.pk %}" class="game-card-link">
+                    <div class="game-cover">
+                        {% if game.cover %}
+                            <img src="{{ game.cover.url }}" alt="Portada de {{ game.title }}" loading="lazy">
+                        {% else %}
+                            <div class="game-cover-placeholder">
+                                <span class="cover-icon">🎮</span>
+                            </div>
+                        {% endif %}
+                        {% if game.is_favorite %}<span class="favorite-badge" title="Favorito">❤️</span>{% endif %}
+                        <div class="status-badge status-{{ game.status }}">
+                            {{ game.get_status_icon }} {{ game.get_status_display }}
+                        </div>
+                    </div>
+                    <div class="game-info">
+                        <h2 class="game-title">{{ game.title }}</h2>
+                        <p class="game-meta">{{ game.developer }} · {{ game.year }}</p>
+                        <div class="game-tags">
+                            <span class="tag tag-genre">{{ game.get_genre_display }}</span>
+                            <span class="tag tag-platform">{{ game.get_platform_icon }} {{ game.get_platform_display }}</span>
+                        </div>
+                        <div class="game-rating" title="{{ game.rating }}/5">{{ game.get_stars }}</div>
+                        {% if game.hours_played > 0 %}
+                            <p class="game-hours">⏱ {{ game.hours_played }}h jugadas</p>
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="game-footer">
+                    <span class="game-author">por {{ game.author.username }}</span>
+                    {% if user.is_authenticated %}
+                        {% if user == game.author or user.is_staff or user.is_superuser %}
+                            <div class="game-actions">
+                                <a href="{% url 'catalog:game_update' game.pk %}" class="btn-icon" title="Editar">✏️</a>
+                                <a href="{% url 'catalog:game_delete' game.pk %}" class="btn-icon btn-icon-danger" title="Eliminar">🗑️</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}{% if selected_platform %}&platform={{ selected_platform }}{% endif %}" class="page-btn">← Anterior</a>
+            {% endif %}
+            <span class="page-info">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}{% if selected_platform %}&platform={{ selected_platform }}{% endif %}" class="page-btn">Siguiente →</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🕹️</div>
+        <h2>No hay videojuegos todavía</h2>
+        <p>
+            {% if search_query or selected_genre or selected_platform %}
+                No se encontraron resultados. <a href="{% url 'catalog:game_list' %}">Ver todo el catálogo</a>
+            {% else %}
+                Sé el primero en añadir un juego al catálogo.
+                {% if user.is_authenticated %}
+                    <a href="{% url 'catalog:game_create' %}">¡Añade uno ahora!</a>
+                {% else %}
+                    <a href="{% url 'signup' %}">Regístrate para empezar</a>
+                {% endif %}
+            {% endif %}
+        </p>
+    </div>
+{% endif %}
+{% endblock %}

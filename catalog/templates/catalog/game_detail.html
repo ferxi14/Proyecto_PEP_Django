@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ game.title }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+
+    <nav class="breadcrumb">
+        <a href="{% url 'catalog:game_list' %}">Catálogo</a>
+        <span class="breadcrumb-sep">›</span>
+        <span>{{ game.title }}</span>
+    </nav>
+
+    <div class="detail-layout">
+
+        <!-- Columna izquierda -->
+        <aside class="detail-sidebar">
+            <div class="detail-cover">
+                {% if game.cover %}
+                <img src="{{ game.cover.url }}" alt="Portada de {{ game.title }}">
+                {% else %}
+                <div class="detail-cover-placeholder">
+                    <span>🎮</span>
+                    <p>Sin portada</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="detail-card">
+                <h3 class="card-subtitle">Ficha del juego</h3>
+                <dl class="detail-list">
+                    <dt>Desarrollador</dt>
+                    <dd>{{ game.developer }}</dd>
+                    <dt>Año</dt>
+                    <dd>{{ game.year }}</dd>
+                    <dt>Género</dt>
+                    <dd>{{ game.get_genre_display }}</dd>
+                    <dt>Plataforma</dt>
+                    <dd>{{ game.get_platform_icon }} {{ game.get_platform_display }}</dd>
+                    <dt>Estado</dt>
+                    <dd><span class="status-inline status-{{ game.status }}">{{ game.get_status_icon }} {{ game.get_status_display }}</span></dd>
+                    <dt>Puntuación</dt>
+                    <dd class="rating-stars">{{ game.get_stars }} ({{ game.rating }}/5)</dd>
+                    {% if game.hours_played > 0 %}
+                    <dt>Horas jugadas</dt>
+                    <dd>⏱ {{ game.hours_played }}h</dd>
+                    {% endif %}
+                    <dt>Registrado por</dt>
+                    <dd>{{ game.author.username }}</dd>
+                    <dt>Fecha</dt>
+                    <dd>{{ game.created_at|date:"d/m/Y" }}</dd>
+                </dl>
+                {% if game.is_favorite %}
+                <div class="favorite-tag">❤️ Favorito</div>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Columna derecha -->
+        <div class="detail-main">
+            <div class="detail-header">
+                <h1 class="detail-title">{{ game.title }}</h1>
+                <p class="detail-subtitle">{{ game.developer }} · {{ game.year }}</p>
+            </div>
+
+            <div class="detail-section">
+                <h2 class="section-title">Reseña personal</h2>
+                <div class="detail-review">
+                    {{ game.review|linebreaks }}
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            {% if user == game.author or user.is_staff or user.is_superuser %}
+            <div class="detail-actions">
+                <a href="{% url 'catalog:game_update' game.pk %}" class="btn btn-primary">✏️ Editar</a>
+                <a href="{% url 'catalog:game_delete' game.pk %}" class="btn btn-danger">🗑️ Eliminar</a>
+            </div>
+            {% else %}
+            <div class="detail-actions">
+                <p class="text-muted">Solo {{ game.author.username }} puede editar esta entrada.</p>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="detail-actions">
+                <p class="text-muted">
+                    <a href="{% url 'login' %}">Inicia sesión</a> para añadir tus propios juegos.
+                </p>
+            </div>
+            {% endif %}
+
+            <div class="comments-section">
+                <h2 class="section-title">
+                    💬 Comentarios
+                    <span class="comment-count">{{ comments|length }}</span>
+                </h2>
+
+                <!-- Lista de comentarios existentes -->
+                {% if comments %}
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment-card">
+                        <div class="comment-header">
+                            <span class="comment-author">👤 {{ comment.author.username }}</span>
+                            <span class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                            {% if user == comment.author or user.is_staff or user.is_superuser %}
+                            <a href="{% url 'catalog:comment_delete' comment.pk %}" class="comment-delete"
+                                title="Eliminar">🗑️</a>
+                            {% endif %}
+                        </div>
+                        <p class="comment-body">{{ comment.body }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-comments">Aún no hay comentarios. ¡Sé el primero en opinar!</p>
+                {% endif %}
+
+                <!-- Formulario (solo si está autenticado) -->
+                {% if user.is_authenticated %}
+                <div class="comment-form-box">
+                    <h3 class="comment-form-title">Deja tu opinión</h3>
+                    <form method="post" action="{% url 'catalog:game_detail' game.pk %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            {{ comment_form.body }}
+                            {% if comment_form.body.errors %}
+                            <span class="field-error">{{ comment_form.body.errors|join:", " }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="comment-form-actions">
+                            <button type="submit" class="btn btn-primary">Publicar comentario</button>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="comment-login-prompt">
+                    <a href="{% url 'login' %}" class="btn btn-secondary">Inicia sesión para comentar</a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="back-link">
+                <a href="{% url 'catalog:game_list' %}">← Volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

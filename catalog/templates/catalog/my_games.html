@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Videojuegos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-content">
+        <h1 class="page-title">🕹️ Mis Videojuegos</h1>
+        <p class="page-subtitle">Tu colección personal</p>
+    </div>
+    <a href="{% url 'catalog:game_create' %}" class="btn btn-primary">+ Añadir Juego</a>
+</div>
+
+<!-- Estadísticas -->
+{% if total > 0 %}
+<div class="stats-bar">
+    <div class="stat-item">
+        <span class="stat-number">{{ total }}</span>
+        <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-item stat-playing">
+        <span class="stat-number">{{ jugando }}</span>
+        <span class="stat-label">🎮 Jugando</span>
+    </div>
+    <div class="stat-item stat-completed">
+        <span class="stat-number">{{ completados }}</span>
+        <span class="stat-label">✅ Completados</span>
+    </div>
+    <div class="stat-item stat-pending">
+        <span class="stat-number">{{ pendientes }}</span>
+        <span class="stat-label">🕐 Pendientes</span>
+    </div>
+    <div class="stat-item stat-platinum">
+        <span class="stat-number">{{ platinados }}</span>
+        <span class="stat-label">🏆 Platinados</span>
+    </div>
+    <div class="stat-item stat-hours">
+        <span class="stat-number">{{ total_horas }}h</span>
+        <span class="stat-label">⏱ Horas totales</span>
+    </div>
+</div>
+{% endif %}
+
+{% if games %}
+    <div class="games-grid">
+        {% for game in games %}
+            <article class="game-card">
+                <a href="{% url 'catalog:game_detail' game.pk %}" class="game-card-link">
+                    <div class="game-cover">
+                        {% if game.cover %}
+                            <img src="{{ game.cover.url }}" alt="{{ game.title }}" loading="lazy">
+                        {% else %}
+                            <div class="game-cover-placeholder">
+                                <span class="cover-icon">🎮</span>
+                            </div>
+                        {% endif %}
+                        {% if game.is_favorite %}<span class="favorite-badge">❤️</span>{% endif %}
+                        <div class="status-badge status-{{ game.status }}">
+                            {{ game.get_status_icon }} {{ game.get_status_display }}
+                        </div>
+                    </div>
+                    <div class="game-info">
+                        <h2 class="game-title">{{ game.title }}</h2>
+                        <p class="game-meta">{{ game.developer }} · {{ game.year }}</p>
+                        <div class="game-tags">
+                            <span class="tag tag-platform">{{ game.get_platform_icon }} {{ game.get_platform_display }}</span>
+                        </div>
+                        <div class="game-rating">{{ game.get_stars }}</div>
+                        {% if game.hours_played > 0 %}
+                            <p class="game-hours">⏱ {{ game.hours_played }}h</p>
+                        {% endif %}
+                    </div>
+                </a>
+                <div class="game-footer">
+                    <span class="game-date">{{ game.created_at|date:"d/m/Y" }}</span>
+                    <div class="game-actions">
+                        <a href="{% url 'catalog:game_update' game.pk %}" class="btn-icon" title="Editar">✏️</a>
+                        <a href="{% url 'catalog:game_delete' game.pk %}" class="btn-icon btn-icon-danger" title="Eliminar">🗑️</a>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🕹️</div>
+        <h2>Aún no has añadido juegos</h2>
+        <p><a href="{% url 'catalog:game_create' %}" class="btn btn-primary">Añadir mi primer juego</a></p>
+    </div>
+{% endif %}
+{% endblock %}
