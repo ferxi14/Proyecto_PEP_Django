@@ -1,7 +1,3 @@
-"""
-Django settings for GameVault project.
-"""
-
 from pathlib import Path
 import os
 
