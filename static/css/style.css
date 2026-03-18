@@ -669,3 +669,16 @@ textarea.form-control { resize: vertical; min-height: 220px; }
     .game-form { padding: 1.25rem; }
     .games-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.rating-number {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-left: 0.3rem;
+}
+
+.rating-label {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+}

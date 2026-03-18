@@ -39,13 +39,7 @@ STATUS_CHOICES = [
     ('platinado', 'Platinado / 100%'),
 ]
 
-RATING_CHOICES = [
-    (1, '★ Malo'),
-    (2, '★★ Regular'),
-    (3, '★★★ Bien'),
-    (4, '★★★★ Muy bueno'),
-    (5, '★★★★★ Obra maestra'),
-]
+
 
 
 class Game(models.Model):
@@ -67,7 +61,7 @@ class Game(models.Model):
     genre = models.CharField(max_length=20, choices=GENRE_CHOICES, default='otro', verbose_name='Género')
     platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES, default='pc', verbose_name='Plataforma')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pendiente', verbose_name='Estado')
-    rating = models.IntegerField(choices=RATING_CHOICES, default=3, verbose_name='Puntuación')
+    rating = models.DecimalField(max_digits=4, decimal_places=2, default=5.00, verbose_name='Puntuación')
     hours_played = models.PositiveIntegerField(default=0, verbose_name='Horas jugadas')
     cover = models.ImageField(upload_to='covers/', blank=True, null=True, verbose_name='Portada')
     is_favorite = models.BooleanField(default=False, verbose_name='Favorito')
@@ -91,7 +85,23 @@ class Game(models.Model):
         return reverse('catalog:game_detail', kwargs={'pk': self.pk})
 
     def get_stars(self):
-        return '★' * self.rating + '☆' * (5 - self.rating)
+        """Convierte la nota (0-10) en estrellas (0-5) con medias estrellas."""
+        # Convertimos la nota a escala de 5 estrellas
+        stars_float = float(self.rating) / 2  # 8.5 → 4.25
+        full  = int(stars_float)              # 4 estrellas llenas
+        half  = 1 if (stars_float - full) >= 0.25 else 0  # media estrella
+        empty = 5 - full - half              # estrellas vacías
+        return '★' * full + '½' * half + '☆' * empty
+
+    def get_rating_label(self):
+        """Etiqueta textual según la nota."""
+        r = float(self.rating)
+        if r >= 9:    return 'Obra maestra'
+        if r >= 7.5:  return 'Muy bueno'
+        if r >= 6:    return 'Bueno'
+        if r >= 4:    return 'Regular'
+        if r >= 2:    return 'Malo'
+        return 'Pésimo'
 
     def get_status_icon(self):
         icons = {

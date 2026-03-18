@@ -40,7 +40,10 @@
                     <dt>Estado</dt>
                     <dd><span class="status-inline status-{{ game.status }}">{{ game.get_status_icon }} {{ game.get_status_display }}</span></dd>
                     <dt>Puntuación</dt>
-                    <dd class="rating-stars">{{ game.get_stars }} ({{ game.rating }}/5)</dd>
+                    <dd class="rating-stars">
+                        {{ game.get_stars }} <span class="rating-number">{{ game.rating|floatformat:"-2" }}/10</span>
+                        <span class="rating-label">— {{ game.get_rating_label }}</span>
+                    </dd>
                     {% if game.hours_played > 0 %}
                     <dt>Horas jugadas</dt>
                     <dd>⏱ {{ game.hours_played }}h</dd>
