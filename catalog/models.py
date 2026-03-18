@@ -91,7 +91,7 @@ class Game(models.Model):
         full  = int(stars_float)              # 4 estrellas llenas
         half  = 1 if (stars_float - full) >= 0.25 else 0  # media estrella
         empty = 5 - full - half              # estrellas vacías
-        return '★' * full + '½' * half + '☆' * empty
+        return '★' * full + '✬' * half + '☆' * empty
 
     def get_rating_label(self):
         """Etiqueta textual según la nota."""
