@@ -65,7 +65,10 @@
                         <div class="game-tags">
                             <span class="tag tag-platform">{{ game.get_platform_icon }} {{ game.get_platform_display }}</span>
                         </div>
-                        <div class="game-rating">{{ game.get_stars }}</div>
+                        <div class="game-rating">
+                            <span class="stars">{{ game.get_stars }}</span>
+                            <span class="rating-number">{{ game.rating|floatformat:"-2" }}/10</span>
+                        </div>
                         {% if game.hours_played > 0 %}
                             <p class="game-hours">⏱ {{ game.hours_played }}h</p>
                         {% endif %}
