@@ -4,7 +4,7 @@ Aplicación web desarrollada con **Django 6.0.3** que permite a los usuarios reg
 
 ---
 
-## Estructura del Proyecto
+## Estructura del Proyecto:
 
 ```
 gamevault/
