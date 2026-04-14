@@ -109,10 +109,10 @@ Abre **http://127.0.0.1:8020** en tu navegador.
 | Campo | Tipo | Descripción |
 |---|---|---|
 | `title` | CharField(200) | **Texto corto** — Título de la videojuego |
-| `director` | CharField(150) | **Texto corto** — Director/a |
+| `developer` | CharField(150) | **Texto corto** — Desarrollador/a |
 | `synopsis` | TextField | **Texto largo** — Sinopsis o reseña personal |
-| `year` | PositiveIntegerField | Año de estreno |
-| `genre` | CharField (choices) | Género videojuegosmatográfico |
+| `year` | PositiveIntegerField | Año de salida |
+| `genre` | CharField (choices) | Género videojuego |
 | `rating` | IntegerField (choices) | Puntuación del usuario (1-5 estrellas) |
 | `poster` | ImageField | Imagen del póster (opcional) |
 | `is_favorite` | BooleanField | Marcada como favorita |
