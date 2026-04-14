@@ -127,11 +127,11 @@ Abre **http://127.0.0.1:8020** en tu navegador.
 | URL | Nombre (`name=`) | Vista |
 |---|---|---|
 | `/` | `catalog:game_list` | Catálogo completo |
-| `/mis-peliculas/` | `catalog:my_games` | Mis videojuegos |
-| `/pelicula/<pk>/` | `catalog:game_detail` | Detalle |
-| `/pelicula/nueva/` | `catalog:game_create` | Crear |
-| `/pelicula/<pk>/editar/` | `catalog:game_update` | Editar |
-| `/pelicula/<pk>/eliminar/` | `catalog:game_delete` | Eliminar |
+| `/mis-juegos/` | `catalog:my_games` | Mis videojuegos |
+| `/juego/<pk>/` | `catalog:game_detail` | Detalle |
+| `/juego/nueva/` | `catalog:game_create` | Crear |
+| `/juego/<pk>/editar/` | `catalog:game_update` | Editar |
+| `/juego/<pk>/eliminar/` | `catalog:game_delete` | Eliminar |
 | `/login/` | `login` | Iniciar sesión |
 | `/logout/` | `logout` | Cerrar sesión |
 | `/signup/` | `signup` | Registro |
