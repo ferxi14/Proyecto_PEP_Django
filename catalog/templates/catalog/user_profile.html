@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %} Perfil de {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👤 {{ profile_user.username }}</h1>
+    <p class="page-subtitle">Miembro desde {{ profile_user.date_joined|date:"F Y" }}</p>
+</div>
+
+<!-- Estadísticas -->
+{% if total > 0 %}
+<div class="stats-bar">
+    <div class="stat-item">
+        <span class="stat-number">{{ total }}</span>
+        <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-item stat-playing">
+        <span class="stat-number">{{ jugando }}</span>
+        <span class="stat-label">🎮 Jugando</span>
+    </div>
+    <div class="stat-item stat-completed">
+        <span class="stat-number">{{ completados }}</span>
+        <span class="stat-label">✅ Completados</span>
+    </div>
+    <div class="stat-item stat-pending">
+        <span class="stat-number">{{ pendientes }}</span>
+        <span class="stat-label">🕐 Pendientes</span>
+    </div>
+    <div class="stat-item stat-platinum">
+        <span class="stat-number">{{ platinados }}</span>
+        <span class="stat-label">🏆 Platinados</span>
+    </div>
+    <div class="stat-item stat-hours">
+        <span class="stat-number">{{ total_horas }}h</span>
+        <span class="stat-label">⏱ Horas totales</span>
+    </div>
+</div>
+{% endif %}
+
+<!-- Lista de juegos -->
+<section>
+    <h2>Catálogo de {{ profile_user.username }}</h2>
+    {% if games %}
+    <div class="games-grid">
+        {% for game in games %}
+        <a href="{% url 'catalog:game_detail' game.pk %}" class="game-card">
+            {% if game.cover %}
+                <img src="{{ game.cover.url }}" alt="{{ game.title }}" class="game-cover">
+            {% endif %}
+            <div class="game-card-body">
+                <h3 class="game-title">{{ game.title }}</h3>
+                <p class="game-meta">{{ game.get_platform_display }} · {{ game.year }}</p>
+                <p class="rating-stars">{{ game.get_stars }} <small class="game-rating">{{ game.rating|floatformat:"-2" }}/10</small></p>
+
+                <span class="status-inline status-{{ game.status }}">{{ game.get_status_icon }} {{ game.get_status_display }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>Este usuario aún no ha añadido juegos.</p>
+    {% endif %}
+</section>
+{% endblock %}

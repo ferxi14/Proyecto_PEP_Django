@@ -7,6 +7,7 @@ from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect, get_object_or_404
 from .models import Game, Comment
 from .forms import GameForm, CustomUserCreationForm, CommentForm
+from django.contrib.auth.models import User
 
 
 class GameListView(ListView):
@@ -192,3 +193,24 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         messages.success(self.request, 'Comentario eliminado.')
         return reverse('catalog:game_detail', kwargs={'pk': self.object.game.pk})
+
+class UserProfileView(DetailView):
+    """Perfil de usuario: sus juegos y estadisticas"""
+    model = User
+    template_name = 'catalog/user_profile.html'
+    context_object_name = 'profile_user'
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        games = Game.objects.filter(author=self.object).order_by('-created_at')
+        context['games'] = games
+        context['total'] = games.count()
+        context['completados'] = games.filter(status='completado').count()
+        context['jugando'] = games.filter(status='jugando').count()
+        context['pendientes'] = games.filter(status='pendiente').count()
+        context['platinados'] = games.filter(status='platinado').count()
+        context['total_horas'] = sum(g.hours_played for g in games)
+        context['favoritos'] = games.filter(is_favorite=True).count()
+        return context

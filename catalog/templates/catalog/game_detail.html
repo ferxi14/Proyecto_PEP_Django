@@ -49,7 +49,11 @@
                     <dd>⏱ {{ game.hours_played }}h</dd>
                     {% endif %}
                     <dt>Registrado por</dt>
-                    <dd>{{ game.author.username }}</dd>
+                    <dd>
+                        <a href="{% url 'catalog:user_profile' game.author.username %}">
+                            {{ game.author.username }}
+                        </a>
+                    </dd>
                     <dt>Fecha</dt>
                     <dd>{{ game.created_at|date:"d/m/Y" }}</dd>
                 </dl>
@@ -90,7 +94,7 @@
                     <a href="{% url 'login' %}">Inicia sesión</a> para añadir tus propios juegos.
                 </p>
             </div>
-            {% endif %}
+            {% endif %} 
 
             <div class="comments-section">
                 <h2 class="section-title">
@@ -104,7 +108,10 @@
                     {% for comment in comments %}
                     <div class="comment-card">
                         <div class="comment-header">
-                            <span class="comment-author">👤 {{ comment.author.username }}</span>
+                            <span class="comment-author">👤 <a
+                                    href="{% url 'catalog:user_profile' comment.author.username %}">
+                                    {{ comment.author.username }}
+                                </a></span>
                             <span class="comment-date">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
                             {% if user == comment.author or user.is_staff or user.is_superuser %}
                             <a href="{% url 'catalog:comment_delete' comment.pk %}" class="comment-delete"
