@@ -4,7 +4,7 @@ Aplicación web desarrollada con **Django 6.0.3** que permite a los usuarios reg
 
 ---
 
-## Estructura del Proyecto
+## Estructura del Proyecto:
 
 ```
 gamevault/
@@ -109,10 +109,10 @@ Abre **http://127.0.0.1:8020** en tu navegador.
 | Campo | Tipo | Descripción |
 |---|---|---|
 | `title` | CharField(200) | **Texto corto** — Título de la videojuego |
-| `director` | CharField(150) | **Texto corto** — Director/a |
+| `developer` | CharField(150) | **Texto corto** — Desarrollador/a |
 | `synopsis` | TextField | **Texto largo** — Sinopsis o reseña personal |
-| `year` | PositiveIntegerField | Año de estreno |
-| `genre` | CharField (choices) | Género videojuegosmatográfico |
+| `year` | PositiveIntegerField | Año de salida |
+| `genre` | CharField (choices) | Género videojuego |
 | `rating` | IntegerField (choices) | Puntuación del usuario (1-5 estrellas) |
 | `poster` | ImageField | Imagen del póster (opcional) |
 | `is_favorite` | BooleanField | Marcada como favorita |
@@ -127,11 +127,11 @@ Abre **http://127.0.0.1:8020** en tu navegador.
 | URL | Nombre (`name=`) | Vista |
 |---|---|---|
 | `/` | `catalog:game_list` | Catálogo completo |
-| `/mis-peliculas/` | `catalog:my_games` | Mis videojuegos |
-| `/pelicula/<pk>/` | `catalog:game_detail` | Detalle |
-| `/pelicula/nueva/` | `catalog:game_create` | Crear |
-| `/pelicula/<pk>/editar/` | `catalog:game_update` | Editar |
-| `/pelicula/<pk>/eliminar/` | `catalog:game_delete` | Eliminar |
+| `/mis-juegos/` | `catalog:my_games` | Mis videojuegos |
+| `/juego/<pk>/` | `catalog:game_detail` | Detalle |
+| `/juego/nueva/` | `catalog:game_create` | Crear |
+| `/juego/<pk>/editar/` | `catalog:game_update` | Editar |
+| `/juego/<pk>/eliminar/` | `catalog:game_delete` | Eliminar |
 | `/login/` | `login` | Iniciar sesión |
 | `/logout/` | `logout` | Cerrar sesión |
 | `/signup/` | `signup` | Registro |
